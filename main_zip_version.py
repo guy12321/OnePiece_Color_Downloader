@@ -111,7 +111,7 @@ if __name__ == "__main__":
                     break
 
             # Genero il path di output del capitolo scaricato
-            output_path = os.path.join("output", f"Capitolo {chapter}")
+            output_path = os.path.join(os.path.dirname(__file__), "output", f"Capitolo {chapter}")
             # Genero il file zip del capitolo scaricato e lo salvo nel path precedentemente creato
             make_archive(output_path, "zip", chapter_path)
             print(f"ZIP: {output_path} created successfully")
