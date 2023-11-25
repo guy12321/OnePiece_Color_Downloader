@@ -1,6 +1,6 @@
 # OnePiece Downloader
 
-Questo script Python consente di scaricare i capitoli del manga *One Piece* dal sito [onepiecepower.com](https://onepiecepower.com/manga8/onepiece/volumiSpeciali/volumiColored/lista-capitoli) e salvarli in formato ZIP.
+Questo script Python consente di scaricare i capitoli del manga *One Piece* in versione *Digital colored comics* dal sito [onepiecepower.com](https://onepiecepower.com/manga8/onepiece/volumiSpeciali/volumiColored/lista-capitoli) e salvarli in formato ZIP.
 
 ## Istruzioni
 
