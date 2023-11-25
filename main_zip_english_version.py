@@ -6,6 +6,13 @@ from bs4 import BeautifulSoup
 from shutil import rmtree, make_archive
 
 
+# Questa classe gestisce l'eccezione per cui viene immesso un capitolo non valido
+class VolumeNotFoundError(Exception):
+    def __init__(self, chapter) -> None:
+        self.chapter = chapter
+        super().__init__(f"The volume for the chapter {chapter} does not exists")
+
+
 # Questa funzione effettua una get all'url indicato sotto e ottiene una lista di elementi dal codice sorgente della pagina e li converte in un dizionario volume-capitoli
 def get_chapters_and_volumes():
     def list_to_dict(list_to_convert: list) -> dict:
@@ -85,6 +92,9 @@ if __name__ == "__main__":
         for delta_chapter in range(0, chapters_to_download):
             chapter = str(starting_chapter + delta_chapter).zfill(3)  # Numero del capitolo in download attuale
             volume = find_father(volumes_and_chapters, int(chapter))  # Numero del volume del capitolo
+            if volume is None:
+                raise VolumeNotFoundError(chapter)
+
             # Genero il path per il salvataggio del capitolo
             chapter_path = os.path.join(temp_path, f"chapter_{chapter}")
             try:
