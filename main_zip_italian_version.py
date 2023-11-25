@@ -67,8 +67,8 @@ def newline():
 if __name__ == "__main__":
     try:
         volumes_and_chapters = get_chapters_and_volumes()  # Dizionario contente le informazioni necessarie
-        starting_chapter = int(input("Enter the number of the chapter to be downloaded: "))  # Capitolo dal quale iniziare a scaricare
-        chapters_to_download = int(input("How many chapters would you like to download? "))  # Capitoli da scaricare successivamente a quello scelto (incluso lo stesso capitolo scritto precedentemente)
+        starting_chapter = int(input("Inserisci il numero del capitolo da scaricare: "))  # Capitolo dal quale iniziare a scaricare
+        chapters_to_download = int(input("Quanti capitoli vuoi scaricare? "))  # Capitoli da scaricare successivamente a quello scelto (incluso lo stesso capitolo scritto precedentemente)
         # Ottengo la cartella temporanea del sistema in uso e creo una cartella da utilizzare
         temp_path = os.path.join(tempfile.gettempdir(), "OnePieceDownloader_TempDir")
 
@@ -76,10 +76,10 @@ if __name__ == "__main__":
         try:
             newline()
             os.mkdir(temp_path)
-            print(f"Folder: {temp_path} created successfully")
+            print(f"Cartella: {temp_path} creata correttamente")
 
         except FileExistsError:
-            print(f"Folder: {temp_path} already exists")
+            print(f"Cartella: {temp_path} già esistente")
 
         # Eseguo un iterazione sul numero di capitoli da scaricare
         for delta_chapter in range(0, chapters_to_download):
@@ -94,27 +94,38 @@ if __name__ == "__main__":
             except FileExistsError:
                 pass  # Non creo la cartella
 
+            actual_chapter = starting_chapter + delta_chapter
+            final_chapter = starting_chapter + chapters_to_download - 1
+            chapters_downloaded = delta_chapter + 1
+            completed_download_percentage = round((chapters_downloaded - 1) / chapters_to_download * 100, 2)
+
             newline()
-            print(f"Downloading chapter: {starting_chapter + delta_chapter}/{starting_chapter + chapters_to_download - 1} ({delta_chapter + 1} out of {chapters_to_download})")
+            print(f"Scaricando il capitolo: {actual_chapter}/{final_chapter} ({chapters_downloaded} di {chapters_to_download}) {completed_download_percentage}%")
+
             # Itero e scarico ogni pagina sino ad ottenere un codice diverso da 200
-            for page in [str(x).zfill(2) for x in range(1, 30)]:
-                print(f"Downloading page: {page}")
-                page_download = requests.get(f"https://onepiecepower.com/manga8/onepiece/volumiSpeciali/volumiColored/volume{volume}/{chapter}/{page}.jpg")
+            starting_page = 1
+            while True:
+                actual_page = str(starting_page).zfill(2)
+                print(f"Scaricando la pagina: {actual_page}")
+                page_download = requests.get(f"https://onepiecepower.com/manga8/onepiece/volumiSpeciali/volumiColored/volume{volume}/{chapter}/{actual_page}.jpg")
                 if page_download.status_code == 200:
-                    print("Done")
+                    print("Fatto")
                     # Scrivo l'immagine scaricata in un file JPG
-                    image_path = os.path.join(chapter_path, f"image_{page}.jpg")
+                    image_path = os.path.join(chapter_path, f"image_{actual_page}.jpg")
                     with open(image_path, "wb") as f:
                         f.write(page_download.content)
+                    starting_page += 1
 
                 else:
+                    print("Impossibile scaricare l'immagine")
+                    print("Scrivo le immagini scaricate in uno ZIP...")
                     break
 
             # Genero il path di output del capitolo scaricato
             output_path = os.path.join(os.path.dirname(__file__), "output", f"Capitolo {chapter}")
             # Genero il file zip del capitolo scaricato e lo salvo nel path precedentemente creato
             make_archive(output_path, "zip", chapter_path)
-            print(f"ZIP: {output_path} created successfully")
+            print(f"ZIP: {output_path} creato correttamente")
 
     # Gestione delle eccezioni
     except Exception as err:
@@ -128,7 +139,7 @@ if __name__ == "__main__":
         try:
             rmtree(temp_path)
             newline()
-            print(f"Folder: {temp_path} deleted successfully")
+            print(f"Cartella: {temp_path} cancellata correttamente")
 
         except Exception:
-            pass  # Se la cartella temporanea non dovesse esistere procedo a non cancellarla
+            pass  # Se per qualche motivo la cartella temporanea non dovesse esistere procedo a non cancellarla
